@@ -1,5 +1,8 @@
 package fr.breadeater.http;
 
+/**
+ * The Methods for the HTTP Server
+ */
 public enum Methods {
     GET("GET"),
     POST("POST"),

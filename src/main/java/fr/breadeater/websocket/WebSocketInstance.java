@@ -5,15 +5,28 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.util.function.Consumer;
 
+/**
+ * Represents a connected WebSocket client instance.
+ */
 public class WebSocketInstance {
     protected Socket socket;
     protected Consumer<String> onMessageCallback = null;
     protected Runnable onCloseCallback = null;
 
+    /**
+     * Creates a WebSocket instance for a connected client.
+     *
+     * @param client The socket representing the client connection.
+     */
     public WebSocketInstance(Socket client){
         this.socket = client;
     }
 
+    /**
+     * Sends a message to the WebSocket client.
+     *
+     * @param data The message to send.
+     */
     public void send(String data){
         try {
             OutputStream out = this.socket.getOutputStream();
@@ -33,10 +46,16 @@ public class WebSocketInstance {
         } catch (IOException ignored){}
     }
 
+    /**
+     * Sets a callback to handle incoming messages.
+     */
     public void onMessage(Consumer<String> callback){
         this.onMessageCallback = callback;
     }
 
+    /**
+     * Sets a callback to handle client disconnection.
+     */
     public void onClose(Runnable callback){
         this.onCloseCallback = callback;
     }

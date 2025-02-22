@@ -13,16 +13,28 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.BiConsumer;
 
+/**
+ * The HTTP Server
+ */
 public class HttpServer {
     private ServerSocket socket;
     private List<BiConsumer<Request, Response>> middlewares;
     private List<Routes> routes;
 
+    /**
+     * Creates a HTTP Server
+     */
     public HttpServer(){
         this.routes = new ArrayList<>();
         this.middlewares = new ArrayList<>();
     }
 
+    /**
+     * Adds a new route
+     * @param method The request method, can be GET or POST or ANY
+     * @param route The route path
+     * @param callback The code that handles the request matching the same path as the route path
+     */
     public void add(Methods method, String route, BiConsumer<Request, Response> callback){
         Routes newRoute = new Routes();
 
@@ -33,10 +45,19 @@ public class HttpServer {
         this.routes.add(newRoute);
     }
 
+    /**
+     * Adds a new middleware
+     * @param middleware The callback that will be triggered at each request
+     */
     public void use(BiConsumer<Request, Response> middleware){
         this.middlewares.add(middleware);
     }
 
+    /**
+     * Starts the HTTP Server with the previously declared routes & middlewares
+     * @param port The port that the HTTP Server must use
+     * @throws IOException
+     */
     public void listen(int port) throws IOException {
         this.socket = new ServerSocket(port);
 
@@ -47,6 +68,10 @@ public class HttpServer {
         }
     }
 
+    /**
+     * Closes the HTTP Server
+     * @throws IOException
+     */
     public void close() throws IOException {
         if (this.socket != null && !this.socket.isClosed()) this.socket.close();
     }
@@ -93,8 +118,6 @@ public class HttpServer {
                             String value = keyValue.length > 1 ? URLDecoder.decode(keyValue[1], StandardCharsets.UTF_8) : "";
                             requestInstance.GETData.put(key, value);
                         }
-
-                        requestInstance.RawQueryString = pathParts[1];
                     }
                 }
 
@@ -125,8 +148,6 @@ public class HttpServer {
 
                     requestInstance.POSTData.put(key, value);
                 }
-
-                requestInstance.RawQueryString = body;
             } else requestInstance.Body = body;
 
             for (BiConsumer<Request, Response> middleware : this.middlewares){

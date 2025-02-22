@@ -2,9 +2,6 @@ package fr.breadeater.http;
 
 import java.io.*;
 import java.net.Socket;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,10 +15,16 @@ public class Response {
 
     protected boolean isSent = false;
 
-    public boolean isSent(){
+    protected boolean isSent(){
         return this.isSent;
     }
 
+    /**
+     * Builds Response instance containing all the logic to respond to the client
+     * @param in The InputStream of the client
+     * @param out The OutputStream of the client
+     * @param client The Client Socket
+     */
     public Response(BufferedReader in, PrintWriter out, Socket client){
         this.headers = new HashMap<>();
         this.client = client;
@@ -29,6 +32,10 @@ public class Response {
         this.inputStream = in;
     }
 
+    /**
+     * Sends data to the client with the headers specified by setHeader function
+     * @param data The data to send
+     */
     public void send(String data){
         if (this.isSent) return;
 
@@ -51,43 +58,28 @@ public class Response {
     }
 
     /**
-     * Same as send function but to send a file<br>
-     * <br>
-     * DEPRECATED: This function is broken, consider reading the file yourself and send the content via {@link #send(String)} function !
+     * Sets the status of the response
+     * @param status The status code
      */
-    @Deprecated
-    public void sendFile(File file) throws IOException {
-        if (this.isSent) return;
-
-        StringBuilder response = new StringBuilder();
-        byte[] content = Files.readAllBytes(file.toPath());
-
-        if (!this.statusText.startsWith(" ")) this.statusText = " " + statusText;
-
-        response.append("HTTP/1.1 ").append(this.status).append(this.statusText).append("\r\n");
-
-        this.headers.forEach((header, value) -> {
-            if (header.equals("Content-Length") || header.equals("Content-Type")) response.append(header).append(": ").append(value).append("\r\n");
-        });
-
-        response.append("Content-Type: ").append(Files.probeContentType(Path.of(file.getAbsolutePath()))).append("\r\n");
-        response.append("Content-Length: ").append(content.length).append("\r\n");
-        response.append("\r\n");
-        response.append(Arrays.toString(content));
-
-        this.outputStream.write(response.toString());
-        this.isSent = true;
-    }
-
     public void setStatus(int status){
         this.status = status;
     }
 
+    /**
+     * Sets the status of the response
+     * @param status The status code
+     * @param statusText The status text
+     */
     public void setStatus(int status, String statusText){
         this.status = status;
         this.statusText = statusText;
     }
 
+    /**
+     * Sets header to be sent to the client when send function called
+     * @param header The Header name
+     * @param value The Header value
+     */
     public void setHeader(String header, String value){
         if (header.equalsIgnoreCase("Content-Length")) return;
 
@@ -97,6 +89,10 @@ public class Response {
         this.headers.put(header, value);
     }
 
+    /**
+     * Removes a specific header
+     * @param header The name of the Header to be removed
+     */
     public void removeHeader(String header){
         if (header.equalsIgnoreCase("Content-Length")) return;
 
