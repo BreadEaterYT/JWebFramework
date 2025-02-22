@@ -57,4 +57,4 @@ Modifying files like LICENSE or README does not count as contribution.
 ### License
 This project is licensed under the MIT License (see [LICENSE](LICENSE) file for more infos)
 
-You can use this framework for commercial needs only if you include the LICENSE file into your project or put the license into your LICENSE or README file, if It's for personal use, I don't mind if the license isn't included within your project.
+You can use this framework for commercial needs only if you include the LICENSE file into your project or put the license into your LICENSE or README file, if It's for personal use, the license is optional.
